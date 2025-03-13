@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Focus App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f9fafb;
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .sun-icon {
+            color: #f59e0b;
+            margin-right: 0.75rem;
+        }
+        
+        h1 {
+            font-weight: 300;
+            font-size: 1.5rem;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 32rem;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        h2 {
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.25rem;
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-bottom: 2px solid #d1d5db;
+            background-color: transparent;
+            font-size: 1.125rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus {
+            border-color: #3b82f6;
+        }
+        
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s;
+            margin: 0 auto;
+        }
+        
+        button:hover {
+            background-color: #2563eb;
+        }
+        
+        .arrow-icon {
+            margin-left: 0.5rem;
+        }
+        
+        .check-icon {
+            margin-right: 0.5rem;
+        }
+        
+        .counter {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .congrats {
+            text-align: center;
+            padding: 1rem;
+            background-color: #ecfdf5;
+            color: #059669;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        .task-card {
+            padding: 2rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .task-label {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .task-text {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        
+        .completed-icon {
+            width: 4rem;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ecfdf5;
+            color: #059669;
+            border-radius: 9999px;
+            margin: 0 auto 1.5rem auto;
+        }
+        
+        .completed-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+        
+        .completed-message {
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .completed-tasks {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .completed-task-item {
+            color: #9ca3af;
+            text-decoration: line-through;
+            text-align: center;
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .completed-task-label {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            text-align: center;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <svg class="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <h1 id="current-date">Today</h1>
+    </header>
+    
+    <div class="container">
+        <!-- Main Task Input -->
+        <div id="main-task-section">
+            <form id="main-task-form">
+                <h2>What is the ONE thing you want to accomplish today?</h2>
+                <input 
+                    type="text" 
+                    id="main-task-input" 
+                    placeholder="Your most important task..." 
+                    required 
+                    autofocus
+                >
+                <button type="submit">
+                    Continue
+                    <svg class="arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+        
+        <!-- Additional Tasks Input -->
+        <div id="additional-task-section" class="hidden">
+            <form id="additional-task-form">
+                <h2>ONLY when you finish that, is there anything else you want to accomplish today?</h2>
+                <input 
+                    type="text" 
+                    id="additional-task-input" 
+                    placeholder="Next task or type 'no'..." 
+                    required
+                >
+                <button type="submit">
+                    Continue
+                    <svg class="arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                </button>
+                <p class="counter" id="task-counter">Additional task 1 of 3 (optional)</p>
+            </form>
+        </div>
+        
+        <!-- Task View -->
+        <div id="task-view-section" class="hidden">
+            <div id="congrats-message" class="congrats hidden">
+                <p>Congratulations for completing your <span id="importance-text">most important</span> work today!</p>
+            </div>
+            
+            <div class="task-card">
+                <h2 class="task-label" id="task-label">Your ONE thing today:</h2>
+                <p class="task-text" id="current-task-text"></p>
+                
+                <button id="complete-button">
+                    <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                    Mark Complete
+                </button>
+                
+                <div id="completed-tasks-container" class="completed-tasks hidden">
+                    <div class="completed-task-label">Completed:</div>
+                    <div id="completed-tasks-list"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- All Completed View -->
+        <div id="completed-section" class="hidden">
+            <div class="task-card">
+                <div class="completed-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                </div>
+                <h2 class="completed-title">All set for today!</h2>
+                <p class="completed-message">
+                    Congratulations on completing all your tasks.<br>
+                    Check in again tomorrow.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Set current date
+        function setCurrentDate() {
+            const today = new Date();
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = today.toLocaleDateString('en-US', options);
+        }
+        
+        // App state
+        const state = {
+            date: new Date().toISOString(),
+            tasks: [],
+            completedTasks: [],
+            additionalTaskCount: 0,
+            currentTaskIndex: 0
+        };
+        
+        // DOM elements
+        const mainTaskSection = document.getElementById('main-task-section');
+        const additionalTaskSection = document.getElementById('additional-task-section');
+        const taskViewSection = document.getElementById('task-view-section');
+        const completedSection = document.getElementById('completed-section');
+        
+        const mainTaskForm = document.getElementById('main-task-form');
+        const additionalTaskForm = document.getElementById('additional-task-form');
+        const mainTaskInput = document.getElementById('main-task-input');
+        const additionalTaskInput = document.getElementById('additional-task-input');
+        const taskCounter = document.getElementById('task-counter');
+        
+        const congratsMessage = document.getElementById('congrats-message');
+        const importanceText = document.getElementById('importance-text');
+        const taskLabel = document.getElementById('task-label');
+        const currentTaskText = document.getElementById('current-task-text');
+        const completeButton = document.getElementById('complete-button');
+        const completedTasksContainer = document.getElementById('completed-tasks-container');
+        const completedTasksList = document.getElementById('completed-tasks-list');
+        
+        // Initialize app
+        function init() {
+            loadState();
+            setCurrentDate();
+            
+            // Event listeners
+            mainTaskForm.addEventListener('submit', handleMainTaskSubmit);
+            additionalTaskForm.addEventListener('submit', handleAdditionalTaskSubmit);
+            completeButton.addEventListener('click', completeCurrentTask);
+            
+            // Check if we already have tasks and show the appropriate view
+            if (state.tasks.length > 0) {
+                if (state.currentTaskIndex >= state.tasks.length) {
+                    showCompletedView();
+                } else {
+                    showTaskView();
+                }
+            }
+        }
+        
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('focusAppState', JSON.stringify(state));
+        }
+        
+        // Load state from localStorage
+        function loadState() {
+            const savedState = localStorage.getItem('focusAppState');
+            if (savedState) {
+                const savedData = JSON.parse(savedState);
+                
+                // Check if it's a new day
+                const savedDate = new Date(savedData.date);
+                const today = new Date();
+                
+                if (savedDate.toDateString() !== today.toDateString()) {
+                    // It's a new day, reset everything
+                    state.date = today.toISOString();
+                    state.tasks = [];
+                    state.completedTasks = [];
+                    state.additionalTaskCount = 0;
+                    state.currentTaskIndex = 0;
+                    saveState();
+                } else {
+                    // Same day, restore saved state
+                    Object.assign(state, savedData);
+                }
+            } else {
+                // First time using the app
+                state.date = new Date().toISOString();
+                saveState();
+            }
+        }
+        
+        // Handle main task submission
+        function handleMainTaskSubmit(e) {
+            e.preventDefault();
+            
+            const text = mainTaskInput.value.trim();
+            if (!text) return;
+            
+            // Add task to state
+            state.tasks.push(text);
+            
+            // Save to localStorage
+            saveState();
+            
+            // Show additional task section
+            mainTaskSection.classList.add('hidden');
+            additionalTaskSection.classList.remove('hidden');
+            
+            // Focus the additional task input
+            additionalTaskInput.focus();
+        }
+        
+        // Handle additional task submission
+        function handleAdditionalTaskSubmit(e) {
+            e.preventDefault();
+            
+            const text = additionalTaskInput.value.trim().toLowerCase();
+            
+            if (text === 'no') {
+                // User doesn't want more tasks
+                saveState();
+                showTaskView();
+            } else {
+                // Add another task
+                state.tasks.push(text);
+                additionalTaskInput.value = '';
+                
+                // Save to localStorage
+                saveState();
+                
+                // Increment counter
+                state.additionalTaskCount++;
+                
+                if (state.additionalTaskCount >= 3) {
+                    // Max additional tasks reached
+                    showTaskView();
+                } else {
+                    // Update counter text
+                    taskCounter.textContent = `Additional task ${state.additionalTaskCount + 1} of 3 (optional)`;
+                    
+                    // Focus input again
+                    additionalTaskInput.focus();
+                }
+            }
+        }
+        
+        // Show task view
+        function showTaskView() {
+            mainTaskSection.classList.add('hidden');
+            additionalTaskSection.classList.add('hidden');
+            taskViewSection.classList.remove('hidden');
+            completedSection.classList.add('hidden');
+            
+            // Show current task
+            updateTaskView();
+        }
+        
+        // Update task view
+        function updateTaskView() {
+            // Update task text
+            currentTaskText.textContent = state.tasks[state.currentTaskIndex];
+            
+            // Update label
+            if (state.currentTaskIndex === 0) {
+                taskLabel.textContent = "Your ONE thing today:";
+                congratsMessage.classList.add('hidden');
+            } else {
+                taskLabel.textContent = "Next up:";
+                
+                // Show congrats message
+                congratsMessage.classList.remove('hidden');
+                if (state.currentTaskIndex === 1) {
+                    importanceText.textContent = " most important";
+                } else {
+                    importanceText.textContent = "";
+                }
+            }
+            
+            // Update completed tasks list
+            updateCompletedTasksList();
+        }
+        
+        // Complete current task
+        function completeCurrentTask() {
+            // Add current task to completed list
+            const completedTask = state.tasks[state.currentTaskIndex];
+            state.completedTasks.push(completedTask);
+            
+            // Move to next task
+            state.currentTaskIndex++;
+            
+            // Save to localStorage
+            saveState();
+            
+            // Check if all tasks completed
+            if (state.currentTaskIndex >= state.tasks.length) {
+                showCompletedView();
+            } else {
+                updateTaskView();
+            }
+        }
+        
+        // Update completed tasks list
+        function updateCompletedTasksList() {
+            if (state.completedTasks.length === 0) {
+                completedTasksContainer.classList.add('hidden');
+                return;
+            }
+            
+            // Clear previous list
+            completedTasksList.innerHTML = '';
+            
+            // Add each completed task
+            state.completedTasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'completed-task-item';
+                taskElement.textContent = task;
+                completedTasksList.appendChild(taskElement);
+            });
+            
+            // Show the container
+            completedTasksContainer.classList.remove('hidden');
+        }
+        
+        // Show completed view
+        function showCompletedView() {
+            taskViewSection.classList.add('hidden');
+            completedSection.classList.remove('hidden');
+        }
+        
+        // Initialize app on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
