@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Focus App</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f59e0b' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5'%3E%3C/circle%3E%3Cline x1='12' y1='1' x2='12' y2='3'%3E%3C/line%3E%3Cline x1='12' y1='21' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='4.22' y1='4.22' x2='5.64' y2='5.64'%3E%3C/line%3E%3Cline x1='18.36' y1='18.36' x2='19.78' y2='19.78'%3E%3C/line%3E%3Cline x1='1' y1='12' x2='3' y2='12'%3E%3C/line%3E%3Cline x1='21' y1='12' x2='23' y2='12'%3E%3C/line%3E%3Cline x1='4.22' y1='19.78' x2='5.64' y2='18.36'%3E%3C/line%3E%3Cline x1='18.36' y1='5.64' x2='19.78' y2='4.22'%3E%3C/line%3E%3C/svg%3E" type="image/svg+xml">
+    <!-- Fallback favicons for various platforms -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='180' height='180' fill='%23f59e0b' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5'%3E%3C/circle%3E%3Cline x1='12' y1='1' x2='12' y2='3'%3E%3C/line%3E%3Cline x1='12' y1='21' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='4.22' y1='4.22' x2='5.64' y2='5.64'%3E%3C/line%3E%3Cline x1='18.36' y1='18.36' x2='19.78' y2='19.78'%3E%3C/line%3E%3Cline x1='1' y1='12' x2='3' y2='12'%3E%3C/line%3E%3Cline x1='21' y1='12' x2='23' y2='12'%3E%3C/line%3E%3Cline x1='4.22' y1='19.78' x2='5.64' y2='18.36'%3E%3C/line%3E%3Cline x1='18.36' y1='5.64' x2='19.78' y2='4.22'%3E%3C/line%3E%3C/svg%3E"">
     <style>
         * {
             margin: 0;
@@ -27,6 +30,14 @@
             display: flex;
             align-items: center;
             margin-bottom: 2rem;
+            width: 100%;
+            max-width: 32rem;
+            justify-content: space-between;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
         }
         
         .sun-icon {
@@ -54,10 +65,12 @@
             text-align: center;
             font-weight: 500;
             font-size: 1.25rem;
-            white-space: nowrap;
+            /* Remove whitespace nowrap to allow text wrapping */
+            white-space: normal;
             max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            overflow: visible;
+            /* Add some line height for better readability when wrapped */
+            line-height: 1.5;
         }
         
         input {
@@ -137,6 +150,8 @@
             font-size: 2rem;
             font-weight: 500;
             margin-bottom: 2rem;
+            /* Allow task text to wrap on small screens */
+            word-wrap: break-word;
         }
         
         .completed-icon {
@@ -163,7 +178,7 @@
         }
         
         .hidden {
-            display: none;
+            display: none !important;
         }
         
         .completed-tasks {
@@ -178,6 +193,8 @@
             text-align: center;
             margin: 0.5rem 0;
             font-size: 1.1rem;
+            /* Allow completed task text to wrap */
+            word-wrap: break-word;
         }
         
         .completed-task-label {
@@ -186,23 +203,136 @@
             text-align: center;
             margin-bottom: 0.75rem;
         }
+        
+        .reset-link {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .reset-link:hover {
+            color: #ef4444;
+            text-decoration: underline;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            max-width: 90%;
+            width: 24rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .modal-message {
+            margin-bottom: 1.5rem;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+        
+        .modal-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .modal-cancel {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: none;
+        }
+        
+        .modal-cancel:hover {
+            background-color: #e5e7eb;
+        }
+        
+        .modal-confirm {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+        }
+        
+        .modal-confirm:hover {
+            background-color: #dc2626;
+        }
+        
+        /* Add responsive padding adjustments for small screens */
+        @media (max-width: 480px) {
+            .task-card {
+                padding: 1.5rem 1rem;
+            }
+            
+            h2 {
+                font-size: 1.125rem;
+            }
+            
+            .task-text {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <svg class="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <h1 id="current-date">Today</h1>
+        <div class="header-left">
+            <svg class="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <h1 id="current-date">Today</h1>
+        </div>
+        <a class="reset-link" id="reset-link">Reset</a>
     </header>
+    
+    <!-- Reset Confirmation Modal -->
+    <div id="reset-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 class="modal-title">Reset Daily Focus</h3>
+            <p class="modal-message">Are you sure you want to reset? This will clear all your tasks for today and let you start fresh.</p>
+            <div class="modal-actions">
+                <button id="cancel-reset" class="modal-button modal-cancel">Cancel</button>
+                <button id="confirm-reset" class="modal-button modal-confirm">Reset</button>
+            </div>
+        </div>
+    </div>
     
     <div class="container">
         <!-- Main Task Input -->
@@ -325,6 +455,12 @@
         const completedTasksContainer = document.getElementById('completed-tasks-container');
         const completedTasksList = document.getElementById('completed-tasks-list');
         
+        // Reset elements
+        const resetLink = document.getElementById('reset-link');
+        const resetModal = document.getElementById('reset-modal');
+        const cancelResetBtn = document.getElementById('cancel-reset');
+        const confirmResetBtn = document.getElementById('confirm-reset');
+        
         // Initialize app
         function init() {
             loadState();
@@ -335,6 +471,24 @@
             additionalTaskForm.addEventListener('submit', handleAdditionalTaskSubmit);
             completeButton.addEventListener('click', completeCurrentTask);
             
+            // Reset functionality
+            resetLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                resetModal.classList.remove('hidden');
+            });
+            
+            cancelResetBtn.addEventListener('click', function() {
+                resetModal.classList.add('hidden');
+            });
+            
+            confirmResetBtn.addEventListener('click', function() {
+                resetApp();
+                resetModal.classList.add('hidden');
+            });
+            
+            // Ensure the modal is hidden on load
+            resetModal.classList.add('hidden');
+            
             // Check if we already have tasks and show the appropriate view
             if (state.tasks.length > 0) {
                 if (state.currentTaskIndex >= state.tasks.length) {
@@ -343,6 +497,31 @@
                     showTaskView();
                 }
             }
+        }
+        
+        // Reset app function
+        function resetApp() {
+            // Reset state
+            state.tasks = [];
+            state.completedTasks = [];
+            state.additionalTaskCount = 0;
+            state.currentTaskIndex = 0;
+            
+            // Save to localStorage
+            saveState();
+            
+            // Reset form values
+            mainTaskInput.value = '';
+            additionalTaskInput.value = '';
+            
+            // Show main task section
+            mainTaskSection.classList.remove('hidden');
+            additionalTaskSection.classList.add('hidden');
+            taskViewSection.classList.add('hidden');
+            completedSection.classList.add('hidden');
+            
+            // Focus on main task input
+            mainTaskInput.focus();
         }
         
         // Save state to localStorage
